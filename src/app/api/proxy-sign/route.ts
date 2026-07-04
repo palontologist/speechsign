@@ -13,7 +13,12 @@ export async function GET(req: NextRequest) {
   const targetUrl = `https://us-central1-sign-mt.cloudfunctions.net/spoken_text_to_signed_pose?text=${encodeURIComponent(text)}&spoken=${spoken}&signed=${signed}`;
 
   try {
-    const response = await fetch(targetUrl);
+    const response = await fetch(targetUrl, {
+      headers: {
+        'Accept': '*/*',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+    });
     
     if (!response.ok) {
       return NextResponse.json(
@@ -22,12 +27,15 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const data = await response.text(); // Use text() as pose-viewer might expect a specific format
+    // We use response.blob() to ensure binary data (like 3D models/poses) 
+    // is passed through without being corrupted by text encoding.
+    const blob = await response.blob();
     
-    return new NextResponse(data, {
+    return new NextResponse(blob, {
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*', // Allow pose-viewer to read it
+        'Content-Type': response.headers.get('Content-Type') || 'application/octet-stream',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=3600',
       },
     });
   } catch (error) {
