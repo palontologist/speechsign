@@ -20,7 +20,7 @@ export default function TranslationPage() {
       const text = encodeURIComponent(transcript);
       const spoken = 'en';
       const signed = 'ase'; // Defaulting to American Sign Language (ASE)
-      const url = `https://us-central1-sign-mt.cloudfunctions.net/spoken_text_to_signed_pose?text=${text}&spoken=${spoken}&signed=${signed}`;
+      const url = `/api/proxy-sign?text=${text}&spoken=${spoken}&signed=${signed}`;
       setPoseUrl(url);
     } catch (e) {
       console.error('Translation error:', e);
