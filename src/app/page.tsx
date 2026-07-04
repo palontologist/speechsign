@@ -62,12 +62,10 @@ export default function TranslationPage() {
 
       <div className="w-full max-w-2xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl flex items-center justify-center">
         {poseUrl ? (
-          <div 
-            dangerouslySetInnerHTML={{ 
-              __html: `<pose-viewer src="${poseUrl}" style="width: 100%; height: 100%;"></pose-viewer>` 
-            }} 
+          <pose-viewer 
+            src={poseUrl} 
             style={{ width: '100%', height: '100%' }}
-          />
+          ></pose-viewer>
         ) : (
           <p className="text-gray-500">No translation loaded</p>
         )}
