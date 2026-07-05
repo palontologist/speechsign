@@ -1,36 +1,29 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/db';
+import { translations } from '@/db/schema';
+import { desc } from 'drizzle-orm';
 
-// Mock translation function
-async function translateTextToSigns(text: string) {
-  console.log(`Translating: ${text}`);
-  // In a real app, this would call a model or a mapping database
-  return {
-    text,
-    animations: ["wave", "hello"], // Mock animation IDs
-  };
-}
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const data = await req.json();
-    const transcript = data.text || data.transcript;
+    const body = await req.json();
+    
+    // Expecting Omi payload
+    const { gloss, poseUrl, swr } = body;
 
-    if (!transcript) {
-      return NextResponse.json({ error: 'No transcript provided' }, { status: 400 });
+    if (!gloss) {
+      return NextResponse.json({ error: 'Missing gloss' }, { status: 400 });
     }
 
-    const result = await translateTextToSigns(transcript);
-
-    // Note: To send this to the frontend in real-time, 
-    // you would typically use a service like Pusher, Ably, or a WebSocket server.
-    console.log('Sign sequence generated:', result);
-
-    return NextResponse.json({ 
-      success: true, 
-      data: result 
+    // Save to TursoDB
+    await db.insert(translations).values({
+      gloss,
+      poseUrl,
+      swr,
     });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error processing Omi request:', error);
+    console.error('[Webhook Error]:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

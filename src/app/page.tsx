@@ -7,10 +7,28 @@ import { defineCustomElements } from 'pose-viewer/loader';
 export default function TranslationPage() {
   const { transcript, isRecording, error, startRecording, stopRecording } = useSpeechRecognition();
   const [poseUrl, setPoseUrl] = useState<string | null>(null);
+  const [currentGloss, setCurrentGloss] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     defineCustomElements();
+
+    // Poll for latest Omi translation every 500ms
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/omi/latest');
+        if (res.ok) {
+          const data = await res.json();
+          // Update only if we have a new poseUrl or gloss
+          setPoseUrl(data.poseUrl || null);
+          setCurrentGloss(data.gloss || '');
+        }
+      } catch (e) {
+        console.error('Polling error:', e);
+      }
+    }, 500);
+
+    return () => clearInterval(pollInterval);
   }, []);
 
   const handleTranslate = async () => {
@@ -60,16 +78,25 @@ export default function TranslationPage() {
         </button>
       </div>
 
-      <div className="w-full max-w-2xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl flex items-center justify-center">
-        {poseUrl ? (
-          <pose-viewer 
-            src={poseUrl} 
-            style={{ width: '100%', height: '100%' }}
-          ></pose-viewer>
-        ) : (
-          <p className="text-gray-500">No translation loaded</p>
-        )}
-      </div>
+       <div className="w-full max-w-2xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl flex flex-col items-center justify-center relative">
+         {poseUrl ? (
+           <>
+             <div className="absolute top-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
+               Live Translation
+             </div>
+             <pose-viewer 
+               src={poseUrl} 
+               style={{ width: '100%', height: '100%' }}
+             ></pose-viewer>
+             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-2 rounded-full text-2xl font-black uppercase italic shadow-xl">
+               {currentGloss}
+             </div>
+           </>
+         ) : (
+           <p className="text-gray-500">No translation loaded</p>
+         )}
+       </div>
+
     </div>
   );
 }
