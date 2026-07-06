@@ -19,9 +19,13 @@ export default function TranslationPage() {
         const res = await fetch('/api/omi/latest');
         if (res.ok) {
           const data = await res.json();
-          // Update only if we have a new poseUrl or gloss
-          setPoseUrl(data.poseUrl || null);
-          setCurrentGloss(data.gloss || '');
+          
+          // If we have a new transcript that is different from the current one, translate it
+          if (data.transcript && data.transcript !== transcript) {
+             // We don't update 'transcript' state here because it might be coming 
+             // from the local mic. We only trigger translation if it's from Omi.
+             triggerOmiTranslation(data.transcript);
+          }
         }
       } catch (e) {
         console.error('Polling error:', e);
@@ -29,7 +33,23 @@ export default function TranslationPage() {
     }, 500);
 
     return () => clearInterval(pollInterval);
-  }, []);
+  }, [transcript]);
+
+  const triggerOmiTranslation = async (text: string) => {
+    setLoading(true);
+    try {
+      const encodedText = encodeURIComponent(text);
+      const url = `/api/proxy-sign?text=${encodedText}&spoken=en&signed=ase`;
+      setPoseUrl(url);
+      // Note: we can't easily get the 'gloss' back from the blob proxy, 
+      // so we use the transcript as the gloss for the demo.
+      setCurrentGloss(text);
+    } catch (e) {
+      console.error('Omi translation error:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleTranslate = async () => {
     if (!transcript) return;

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { translations } from '@/db/schema';
-import { desc } from 'drizzle-orm';
 
 export async function GET() {
   return NextResponse.json({ status: 'ok', message: 'Interpret route is reachable' });
@@ -11,18 +10,18 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     
-    // Expecting Omi payload
-    const { gloss, poseUrl, swr } = body;
+    // Omi webhook usually sends a payload with 'transcript' or 'text'
+    const transcript = body.transcript || body.text || body.segment?.text;
 
-    if (!gloss) {
-      return NextResponse.json({ error: 'Missing gloss' }, { status: 400 });
+    if (!transcript) {
+      console.warn('[Webhook] Received payload without transcript:', body);
+      return NextResponse.json({ error: 'Missing transcript' }, { status: 400 });
     }
 
-    // Save to TursoDB
+    // Save the transcript to TursoDB
+    // The frontend will then use this transcript to trigger the animation
     await db.insert(translations).values({
-      gloss,
-      poseUrl,
-      swr,
+      transcript,
     });
 
     return NextResponse.json({ success: true });
