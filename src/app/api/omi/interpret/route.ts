@@ -9,15 +9,14 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const contentType = req.headers.get('content-type') || '';
+    console.log(`[Omi Webhook] Request received. Content-Type: ${contentType}`);
     
     // HANDLE BINARY AUDIO DATA
     if (contentType.includes('application/octet-stream') || contentType.includes('audio')) {
-      console.log('[Omi Webhook] Received binary audio stream');
-      
-      // Since we can't transcribe audio in a serverless function easily without a session,
-      // we save a marker to the DB so you can see the data is arriving.
+      console.log('[Omi Webhook] Detected binary audio stream. Ignoring for transcript demo.');
+      // We save a marker but log a warning that this is NOT a transcript
       await db.insert(translations).values({
-        transcript: `[AUDIO CHUNK RECEIVED] - ${new Date().toISOString()}`,
+        transcript: `[AUDIO CHUNK] - Received audio but expected transcript. Check Omi trigger settings.`,
       });
       
       return NextResponse.json({ success: true, mode: 'audio' });
