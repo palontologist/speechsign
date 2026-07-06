@@ -10,17 +10,19 @@ async function setup() {
   });
 
   try {
-    console.log('Creating translations table...');
+    console.log('Dropping and recreating translations table for schema sync...');
+    await client.execute(`DROP TABLE IF EXISTS translations;`);
     await client.execute(`
-      CREATE TABLE IF NOT EXISTS translations (
+      CREATE TABLE translations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        gloss TEXT NOT NULL,
+        transcript TEXT NOT NULL,
+        gloss TEXT,
         pose_url TEXT,
         swr TEXT,
         timestamp INTEGER DEFAULT (strftime('%s','now'))
       );
     `);
-    console.log('Table created successfully!');
+    console.log('Table recreated successfully with updated schema!');
   } catch (e) {
     console.error('Setup failed:', e);
   }
