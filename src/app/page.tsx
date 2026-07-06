@@ -83,12 +83,12 @@ export default function TranslationPage() {
            {isRecording ? 'Stop Recording' : 'Start Recording'}
          </button>
 
-         <div className="flex flex-col items-center gap-2 w-full max-w-md p-4 bg-white/5 border border-white/10 rounded-2xl text-sm text-gray-300">
-           <span className="font-bold text-blue-400">Connect via Omi:</span>
+         <div className="flex flex-col items-center gap-2 w-full max-w-md p-4 bg-blue-50 border border-blue-200 rounded-2xl text-sm text-gray-700">
+           <span className="font-bold text-blue-700">Connect via Omi:</span>
            <p className="text-center text-xs">
-             1. Install the SpeechSign app from <a href="https://app.omi.me/my-apps/01KWRHPZCB704KG9W0RF2ZMDS2" target="_blank" className="underline text-white">Omi App Store</a>.<br/>
-             2. Set the Webhook URL to: <code className="bg-black px-1 rounded">https://speechsign.vercel.app/api/omi/interpret</code><br/>
-             3. Set Trigger to: <span className="font-mono text-white">Transcript Segment Processed</span>.
+             1. Install the SpeechSign app from <a href="https://app.omi.me/my-apps/01KWRHPZCB704KG9W0RF2ZMDS2" target="_blank" className="underline text-blue-800 font-medium">Omi App Store</a>.<br/>
+             2. Set the Webhook URL to: <code className="bg-gray-200 text-gray-800 px-1 rounded font-mono">https://speechsign.vercel.app/api/omi/interpret</code><br/>
+             3. Set Trigger to: <span className="font-mono text-gray-900 font-bold">Transcript Segment Processed</span>.
            </p>
          </div>
 
