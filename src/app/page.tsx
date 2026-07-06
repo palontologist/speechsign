@@ -73,17 +73,27 @@ export default function TranslationPage() {
       <p className="text-gray-600 mb-8 text-center max-w-md">
         Real-time speech-to-sign interpretation. Connect your Omi device or use the microphone below.
       </p>
-      <div className="flex flex-col items-center gap-4 mb-8">
-        <button
-          onClick={isRecording ? stopRecording : () => startRecording()}
-          className={`px-6 py-3 rounded-full font-semibold transition-all ${
-            isRecording ? 'bg-red-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
-        >
-          {isRecording ? 'Stop Recording' : 'Start Recording'}
-        </button>
+       <div className="flex flex-col items-center gap-4 mb-8">
+         <button
+           onClick={isRecording ? stopRecording : () => startRecording()}
+           className={`px-6 py-3 rounded-full font-semibold transition-all ${
+             isRecording ? 'bg-red-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
+           }`}
+         >
+           {isRecording ? 'Stop Recording' : 'Start Recording'}
+         </button>
 
-        {error && <p className="text-red-500 text-sm">Error: {error}</p>}
+         <div className="flex flex-col items-center gap-2 w-full max-w-md p-4 bg-white/5 border border-white/10 rounded-2xl text-sm text-gray-300">
+           <span className="font-bold text-blue-400">Connect via Omi:</span>
+           <p className="text-center text-xs">
+             1. Install the SpeechSign app from <a href="https://app.omi.me/my-apps/01KWRHPZCB704KG9W0RF2ZMDS2" target="_blank" className="underline text-white">Omi App Store</a>.<br/>
+             2. Set the Webhook URL to: <code className="bg-black px-1 rounded">https://speechsign.vercel.app/api/omi/interpret</code><br/>
+             3. Set Trigger to: <span className="font-mono text-white">Transcript Segment Processed</span>.
+           </p>
+         </div>
+
+         {error && <p className="text-red-500 text-sm">Error: {error}</p>}
+
         
         <div className="text-lg font-medium min-h-[1.5em]">
           Transcript: <span className="text-blue-600">{transcript || '...'}</span>
