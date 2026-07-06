@@ -36,6 +36,11 @@ export default function TranslationPage() {
   }, [transcript]);
 
   const triggerOmiTranslation = async (text: string) => {
+    // Ignore system messages or debug audio chunks
+    if (!text || text.startsWith('[AUDIO CHUNK]') || text.startsWith('DEBUG:')) {
+      return;
+    }
+
     setLoading(true);
     try {
       const encodedText = encodeURIComponent(text);
