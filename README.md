@@ -1,66 +1,78 @@
-# 🤟 SpeechSign
+# 🤟 SpeechSign: The Full-Loop Communication Bridge
 
-**SpeechSign** is a real-time speech-to-sign language interpretation platform designed to bridge the communication gap between hearing and non-hearing individuals. By leveraging real-time audio processing and 3D animation, SpeechSign transforms spoken conversations into accurate sign language in real-time.
+SpeechSign is a real-time, AI-powered accessibility ecosystem designed to bridge the communication gap between the hearing and the Deaf/Hard-of-Hearing communities. 
 
-## 🚀 Features
+Unlike traditional captioning, SpeechSign provides a **Full-Loop experience**, transforming spoken language into visual signs and signed gestures back into spoken voice.
 
-- **Real-time Interpretation**: Low-latency conversion of speech to sign language animations.
-- **Omi Integration**: Seamlessly integrates as an external plugin for Omi devices, triggering interpretations automatically when conversations start.
-- **3D Avatar Rendering**: High-fidelity sign language animations for clear communication.
-- **Webhook-based Architecture**: Extensible API design allowing for various input sources.
+## 🌟 The Vision: Full-Loop Accessibility
 
-## 🛠️ Tech Stack
+Most accessibility tools are one-way. SpeechSign creates a bidirectional bridge:
 
-- **Frontend**: Next.js 16, React 19, Tailwind CSS
-- **Backend**: Next.js API Routes (Edge runtime)
-- **Omi Plugin**: FastAPI, Python
-- **Animation**: Pose-Viewer / Custom 3D Engine
+### 1. Hearing $\rightarrow$ Deaf (Speech-to-Sign)
+**Flow**: `Speaker` $\rightarrow$ `Omi (Global Capture)` $\rightarrow$ `TursoDB (State Bridge)` $\rightarrow$ `3D Translate Avatar`
+*   **Real-time Capture**: Integrated with **Omi's** plugin architecture to capture speech from any environment.
+*   **Low-Latency Bridge**: Uses **TursoDB** and **Drizzle ORM** to synchronize transcripts across the globe in <500ms.
+*   **Visual Expression**: Renders a high-fidelity 3D skeletal avatar that performs sign language in real-time.
 
-## 🔌 Omi Integration Flow
-
-SpeechSign can operate as an external integration for Omi:
-1. **Omi Device** $\rightarrow$ Captures speech.
-2. **Omi Plugin** $\rightarrow$ Forwards transcript to `/api/omi/interpret`.
-3. **SpeechSign Backend** $\rightarrow$ Translates text to sign sequences.
-4. **SpeechSign Frontend** $\rightarrow$ Renders animations in real-time.
-
-## 📦 Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/your-username/speechsign.git
-cd speechsign
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-## 🌐 API Reference
-
-### Interpret Endpoint
-`POST /api/omi/interpret`
-
-**Payload:**
-```json
-{
-  "text": "Hello, how are you?",
-  "user_id": "user_123"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "text": "Hello, how are you?",
-    "animations": ["wave", "hello", "query_state"]
-  }
-}
-```
+### 2. Deaf $\rightarrow$ Hearing (Sign-to-Speech)
+**Flow**: `Signer` $\rightarrow$ `Webcam` $\rightarrow$ `NVIDIA LocateAnything` $\rightarrow$ `Browser TTS`
+*   **Visual Grounding**: Leverages **NVIDIA LocateAnything-3B** to recognize sign language gestures in a video stream.
+*   **Instant Translation**: Maps detected visual poses to textual meanings.
+*   **Voice Output**: Uses the Web Speech API to convert translated text into a natural spoken voice.
 
 ---
-Built to empower accessibility and inclusivity. 🌍
+
+## 🛠️ Technical Stack
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend** | `Next.js`, `Tailwind CSS` | High-performance UI and 3D avatar rendering |
+| **Database** | `TursoDB`, `Drizzle ORM` | Edge-optimized state management for real-time sync |
+| **AI (Vision)** | `NVIDIA LocateAnything` | Vision-Language grounding for gesture recognition |
+| **Capture** | `Omi Plugin` | Global, wearable-ready speech transcription |
+| **Avatar** | `Translate Avatar` | 3D skeletal sign language representation |
+| **Deployment** | `Vercel` | Serverless hosting for the interpretation bridge |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 20+
+- TursoDB Account
+- NVIDIA GPU (for Sign-to-Speech local server)
+
+### Installation
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/palontologist/speechsign.git
+   cd speechsign
+   npm install
+   ```
+
+2. **Environment Setup**
+   Create a `.env` file in the root:
+   ```env
+   TURSO_DATABASE_URL="your_url"
+   TURSO_AUTH_TOKEN="your_token"
+   ```
+
+3. **Run the App**
+   ```bash
+   npm run dev
+   ```
+
+### Connecting Omi
+1. Install the SpeechSign app from the [Omi App Store](https://app.omi.me/my-apps/01KWRHPZCB704KG9W0RF2ZMDS2).
+2. Set the Webhook URL to: `https://speechsign.vercel.app/api/omi/interpret`.
+3. Set the Trigger to: `Transcript Segment Processed`.
+
+---
+
+## 📈 Roadmap
+- [ ] **Custom Sign Tuning**: Implementing LoRA fine-tuning on LocateAnything for specific regional sign dialects.
+- [ ] **Low-Latency Edge Rendering**: Moving the avatar rendering to the edge to reduce visual lag.
+- [ ] **Multi-User Rooms**: Enabling group conversations where multiple avatars sign simultaneously.
+
+## 📄 License
+Distributed under the MIT License. See `LICENSE` for more information.
